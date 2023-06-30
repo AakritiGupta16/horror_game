@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <head>
+        <style>
+            body {
+                background-color: black;
+                color: white;
+                font-family: 'Courier New', Courier, monospace;
+                background-image: url("static/image-5.jpg");
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                background-size: cover;
+            }
+            h1 {
+                color: red;
+                text-shadow: 2px 2px 2px rgba(150, 0, 0, 0.5);
+                font-family: 'Creepster', cursive; /* You can use a horror themed font */
+                text-align: center;
+            }
+
+            .chatbox {
+                margin: 10px auto;
+                width: 50%;
+                height: 300px;
+                border: 1px solid white;
+                padding: 10px;
+                overflow: auto;
+                margin-bottom: 10px;
+            }
+            .input {
+              margin: 30px;
+              background: none;
+              border: none;
+              outline: none;
+              max-width: 190px;
+              padding: 10px 20px;
+              font-size: 16px;
+              border-radius: 9999px;
+              box-shadow: inset 2px 5px 10px rgb(5, 5, 5);
+              color: #ffffff;
+            }
+            .input::placeholder {
+                color: #ffffff;
+                opacity: 1; /* Optional: fully opaque placeholder text */
+            }
+            button,button::after {
+              padding: 10px 50px;
+              font-size: 20px;
+              border: none;
+              border-radius: 5px;
+              color: white;
+              background-color: transparent;
+              position: relative;
+            }
+
+            button::after {
+              --move1: inset(50% 50% 50% 50%);
+              --move2: inset(31% 0 40% 0);
+              --move3: inset(39% 0 15% 0);
+              --move4: inset(45% 0 40% 0);
+              --move5: inset(45% 0 6% 0);
+              --move6: inset(14% 0 61% 0);
+              clip-path: var(--move1);
+              content: 'GLITCH';
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              display: block;
+            }
+
+            button:hover::after {
+              animation: glitch_4011 1s;
+              text-shadow: 10 10px 10px black;
+              animation-timing-function: steps(2, end);
+              text-shadow: -3px -3px 0px #1df2f0, 3px 3px 0px #E94BE8;
+              background-color: transparent;
+              border: 3px solid rgb(0, 255, 213);
+            }
+          
+            button:hover {
+              text-shadow: -1px -1px 0px #1df2f0, 1px 1px 0px #E94BE8;
+            }
+
+            button:hover {
+              background-color: transparent;
+              border: 1px solid rgb(0, 255, 213);
+              box-shadow: 0px 10px 10px -10px rgb(0, 255, 213);
+            }
+
+            @keyframes glitch_4011 {
+              0% {
+                clip-path: var(--move1);
+                transform: translate(0px,-10px);
+              }
+
+              10% {
+                clip-path: var(--move2);
+                transform: translate(-10px,10px);
+              }
+
+              20% {
+                clip-path: var(--move3);
+                transform: translate(10px,0px);
+              }
+
+              30% {
+                clip-path: var(--move4);
+                transform: translate(-10px,10px);
+              }
+
+              40% {
+                clip-path: var(--move5);
+                transform: translate(10px,-10px);
+              }
+
+              50% {
+                clip-path: var(--move6);
+                transform: translate(-10px,10px);
+              }
+
+              60% {
+                clip-path: var(--move1);
+                transform: translate(10px,-10px);
+              }
+
+              70% {
+                clip-path: var(--move3);
+                transform: translate(-10px,10px);
+              }
+
+              80% {
+                clip-path: var(--move2);
+                transform: translate(10px,-10px);
+              }
+
+              90% {
+                clip-path: var(--move4);
+                transform: translate(-10px,10px);
+              }
+
+              100% {
+                clip-path: var(--move1);
+                transform: translate(0);
+              }
+            }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+
+                // Hide input box for player_name on load
+                $("#player_input").hide();
+
+                // Handle the form submission for playing the game
+                $("#game-form").submit(function(e){
+                    e.preventDefault(); // Prevent the form from actually submitting
+
+                    var player_name = $("#player_name").val();
+                    var player_input = $("#player_input").val();
+
+                    if (!player_name) {
+                        alert('Please enter your name to get started');
+                        return;
+                    }
+
+                    // Hide name input and show game input
+                    $("#player_name").hide();
+                    $("#player_input").show();
+
+                    $.ajax({
+                        url: '/play',
+                        method: 'POST',
+                        data: {
+                            player_name: player_name,
+                            player_input: player_input
+                        },
+                        success: function(response) {
+                            // This is executed when the call is successful
+                            $("#game-text").text(response.text);
+                            var optionsText = '';
+                            for (var i = 0; i < response.options.length; i++) {
+                                optionsText += (i+1) + ". " + response.options[i] + "<br>";
+                            }
+                            $("#options").html(optionsText);
+                        },
+                        error: function(error) {
+                            // This is executed if there was an error with the call
+                            console.log(error);
+                        }
+                    });
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <h1>Are you ready for some adventure?</h1>
+        <div class="chatbox" id="chatbox">
+            <p id="game-text"><!-- Game text will go here --></p>
+            <p id="options"><!-- Options will go here --></p>
+        </div>
+        <center>
+        <form id="game-form" method="POST" action="/play">
+            <div class="container">
+                <input class = "input" type="text" id="player_name" name="player_name" placeholder="Enter your name" required>
+                <input class = "input" type="text" id="player_input" name="player_input" placeholder = "Think, then choose!">
+            </div>
+            <div>
+                <button type="submit">Submit</button>
+            </div>
+        </center>
+    </body>
+</html>
